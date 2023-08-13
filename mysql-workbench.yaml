@@ -28,12 +28,12 @@ spec:
             - name: CUSTOM_USER
               valueFrom:
                 secretKeyRef:
-                  name: bookstore-secret
+                  name: databases-secret
                   key: mysql-user-pass
             - name: PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bookstore-secret
+                  name: databases-secret
                   key: mysql-user-pass
           resources:
             limits:

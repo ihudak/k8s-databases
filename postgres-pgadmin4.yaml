@@ -28,14 +28,14 @@ spec:
             - name: PGADMIN_DEFAULT_USER
               valueFrom:
                 secretKeyRef:
-                  name: bookstore-secret
+                  name: databases-secret
                   key: pgdb-user-name
             - name: PGADMIN_DEFAULT_EMAIL
               value: $(PGADMIN_DEFAULT_USER)@dec21.eu
             - name: PGADMIN_DEFAULT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bookstore-secret
+                  name: databases-secret
                   key: pgdb-user-pass
           resources:
             limits:
