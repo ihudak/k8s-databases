@@ -35,6 +35,9 @@ spec:
                 secretKeyRef:
                   name: databases-secret
                   key: pgdb-user-pass
+          volumeMounts:
+            - mountPath: /docker-entrypoint-initdb.d/
+              name: pg-init-path
           resources:
             limits:
               cpu: 1000m
@@ -42,6 +45,11 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
+      volumes:
+        - name: pg-init-path
+          hostPath:
+            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
+            type: Directory
 ---
 apiVersion: v1
 kind: Service
