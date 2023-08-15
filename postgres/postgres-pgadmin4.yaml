@@ -39,8 +39,8 @@ spec:
                   key: pgdb-user-pass
           resources:
             limits:
-              cpu: 1000m
-              memory: 1Gi
+              cpu: 200m
+              memory: 256Mi
             requests:
               cpu: 200m
               memory: 256Mi
