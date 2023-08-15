@@ -1,5 +1,6 @@
 = Databases
-==Before Start
+
+== Before Start
 
 1. execute script set_cur_dir.sh to set absolute pathes to the init and data directories
 2. update the init scripts with the databases you want to create on init
