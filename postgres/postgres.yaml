@@ -1,3 +1,33 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  persistentVolumeReclaimPolicy: Retain
+  # Set it to Delete when removing the volume to delete the files - so it triggers the docker-entrypoint
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: {CURDIR}/mnt
+#    type: Directory
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-persistent-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,8 +66,12 @@ spec:
                   name: databases-secret
                   key: pgdb-user-pass
           volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-persistent-storage
+              readOnly: false
             - mountPath: /docker-entrypoint-initdb.d/
               name: pg-init-path
+              readOnly: true
           resources:
             limits:
               cpu: 1000m
@@ -46,9 +80,12 @@ spec:
               cpu: 200m
               memory: 256Mi
       volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-persistent-claim
         - name: pg-init-path
           hostPath:
-            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
+            path: {CURDIR}/init
             type: Directory
 ---
 apiVersion: v1
