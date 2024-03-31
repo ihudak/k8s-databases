@@ -14,7 +14,8 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/mnt
+    path: /home/ihudak/dev/dec.21/k8s/k8s-databases/mongo/mnt
+#    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/mnt
 #    type: Directory
 ---
 apiVersion: v1
@@ -89,7 +90,8 @@ spec:
             claimName: mongo-persistent-claim
         - name: mongo-init-path
           hostPath:
-            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/init
+            path: /home/ihudak/dev/dec.21/k8s/k8s-databases/mongo/init
+#            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/init
             type: Directory
 ---
 apiVersion: v1

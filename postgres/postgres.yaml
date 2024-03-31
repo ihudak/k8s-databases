@@ -14,7 +14,8 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/mnt
+    path: /home/ihudak/dev/dec.21/k8s/k8s-databases/postgres/mnt
+#    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/mnt
 #    type: Directory
 ---
 apiVersion: v1
@@ -89,7 +90,8 @@ spec:
             claimName: postgres-persistent-claim
         - name: pg-init-path
           hostPath:
-            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
+            path: /home/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
+#            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
             type: Directory
 ---
 apiVersion: v1

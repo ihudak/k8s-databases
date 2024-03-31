@@ -14,7 +14,8 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/mnt
+    path: /home/ihudak/dev/dec.21/k8s/k8s-databases/mysql/mnt
+#    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/mnt
 #    type: Directory
 ---
 apiVersion: v1
@@ -99,7 +100,8 @@ spec:
             claimName: mysql-persistent-claim
         - name: mysql-init-path
           hostPath:
-            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/init
+            path: /home/ihudak/dev/dec.21/k8s/k8s-databases/mysql/init
+#            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/init
             type: Directory
 ---
 apiVersion: v1
