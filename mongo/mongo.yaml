@@ -8,15 +8,14 @@ metadata:
 spec:
   storageClassName: manual
   persistentVolumeReclaimPolicy: Retain
-  # Set it to Delete when removing the volume to delete the files - so it triggers the docker-entrypoint
+  # Retain. Set it to Delete when removing the volume to delete the files - so it triggers the docker-entrypoint
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
     path: {CURDIR}/mnt
-#    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/mnt
-#    type: Directory
+    type: Directory
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -55,15 +54,6 @@ spec:
       labels:
         app: mongo
     spec:
-      volumes:
-        - name: mongo-persistent-storage
-          persistentVolumeClaim:
-            claimName: mongo-persistent-claim
-        - name: mongo-init-path
-          hostPath:
-            path: {CURDIR}/init
-      #            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/init
-      #            type: Directory
       containers:
         - name: mongo
           image: mongo:latest
@@ -81,11 +71,11 @@ spec:
                   name: databases-secret
                   key: mongo-user-pass
           volumeMounts:
-            - mountPath: /data/db
-              name: mongo-persistent-storage
+            - name: mongo-persistent-storage
+              mountPath: /data/db
               readOnly: false
-            - mountPath: /docker-entrypoint-initdb.d/
-              name: mongo-init-path
+            - name: mongo-init-path
+              mountPath: /docker-entrypoint-initdb.d/
               readOnly: true
           resources:
             limits:
@@ -94,6 +84,17 @@ spec:
             requests:
               cpu: 200m
               memory: 512Mi
+      volumes:
+        - name: mongo-persistent-storage
+#          hostPath:
+#            path: {CURDIR}/mnt
+#            type: Directory
+          persistentVolumeClaim:
+            claimName: mongo-persistent-claim
+        - name: mongo-init-path
+          hostPath:
+            path: {CURDIR}/init
+            type: Directory
 ---
 apiVersion: v1
 kind: Service

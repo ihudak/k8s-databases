@@ -8,15 +8,14 @@ metadata:
 spec:
   storageClassName: manual
   persistentVolumeReclaimPolicy: Retain
-  # Set it to Delete when removing the volume to delete the files - so it triggers the docker-entrypoint
+  # Retain. Set it to Delete when removing the volume to delete the files - so it triggers the docker-entrypoint
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
     path: {CURDIR}/mnt
-#    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/mnt
-#    type: Directory
+    type: Directory
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -55,15 +54,6 @@ spec:
       labels:
         app: postgres
     spec:
-      volumes:
-        - name: postgres-persistent-storage
-          persistentVolumeClaim:
-            claimName: postgres-persistent-claim
-        - name: pg-init-path
-          hostPath:
-            path: {CURDIR}/init
-      #            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
-      #            type: Directory
       containers:
         - name: postgres
           image: postgres:latest
@@ -81,11 +71,11 @@ spec:
                   name: databases-secret
                   key: pgdb-user-pass
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: postgres-persistent-storage
+            - name: postgres-persistent-storage
+              mountPath: /var/lib/postgresql/data
               readOnly: false
-            - mountPath: /docker-entrypoint-initdb.d/
-              name: pg-init-path
+            - name: pg-init-path
+              mountPath: /docker-entrypoint-initdb.d/
               readOnly: true
           resources:
             limits:
@@ -94,6 +84,17 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
+      volumes:
+        - name: postgres-persistent-storage
+#          hostPath:
+#            path: {CURDIR}/mnt
+#            type: Directory
+          persistentVolumeClaim:
+            claimName: postgres-persistent-claim
+        - name: pg-init-path
+          hostPath:
+            path: {CURDIR}/init
+            type: Directory
 ---
 apiVersion: v1
 kind: Service

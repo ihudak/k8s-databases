@@ -8,14 +8,13 @@ metadata:
 spec:
   storageClassName: manual
   persistentVolumeReclaimPolicy: Retain
-  # Set it to Delete when removing the volume to delete the files - so it triggers the docker-entrypoint
+  # Retain. Set it to Delete when removing the volume to delete the files - so it triggers the docker-entrypoint
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
     path: {CURDIR}/mnt
-#    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/mnt
     type: Directory
 ---
 apiVersion: v1
@@ -55,15 +54,6 @@ spec:
       labels:
         app: mysql
     spec:
-      volumes:
-        - name: mysql-persistent-storage
-          persistentVolumeClaim:
-            claimName: mysql-persistent-claim
-        - name: mysql-init-path
-          hostPath:
-            path: {CURDIR}/init
-      #            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/init
-      #            type: Directory
       containers:
         - name: mysql
           image: mysql:latest
@@ -91,11 +81,11 @@ spec:
                   name: databases-secret
                   key: mysql-user-pass
           volumeMounts:
-            - mountPath: /var/lib/mysql/
-              name: mysql-persistent-storage
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql/
               readOnly: false
-            - mountPath: /docker-entrypoint-initdb.d/
-              name: mysql-init-path
+            - name: mysql-init-path
+              mountPath: /docker-entrypoint-initdb.d/
               readOnly: true
           resources:
             limits:
@@ -104,6 +94,17 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
+      volumes:
+        - name: mysql-persistent-storage
+#          hostPath:
+#            path: {CURDIR}/mnt
+#            type: Directory
+          persistentVolumeClaim:
+            claimName: mysql-persistent-claim
+        - name: mysql-init-path
+          hostPath:
+            path: {CURDIR}/init
+            type: Directory
 ---
 apiVersion: v1
 kind: Service
