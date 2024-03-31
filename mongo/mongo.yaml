@@ -14,7 +14,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /home/ihudak/dev/dec.21/k8s/k8s-databases/mongo/mnt
+    path: {CURDIR}/mnt
 #    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/mnt
 #    type: Directory
 ---
@@ -24,6 +24,7 @@ metadata:
   name: mongo-persistent-claim
   namespace: databases
 spec:
+  volumeName: mongo-pv-volume
   storageClassName: manual
   accessModes:
     - ReadWriteOnce
@@ -54,6 +55,15 @@ spec:
       labels:
         app: mongo
     spec:
+      volumes:
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+            claimName: mongo-persistent-claim
+        - name: mongo-init-path
+          hostPath:
+            path: {CURDIR}/init
+      #            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/init
+      #            type: Directory
       containers:
         - name: mongo
           image: mongo:latest
@@ -84,15 +94,6 @@ spec:
             requests:
               cpu: 200m
               memory: 512Mi
-      volumes:
-        - name: mongo-persistent-storage
-          persistentVolumeClaim:
-            claimName: mongo-persistent-claim
-        - name: mongo-init-path
-          hostPath:
-            path: /home/ihudak/dev/dec.21/k8s/k8s-databases/mongo/init
-#            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mongo/init
-            type: Directory
 ---
 apiVersion: v1
 kind: Service
@@ -102,9 +103,9 @@ metadata:
 spec:
   selector:
     app: mongo
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 27017
       protocol: TCP
       targetPort: 27017
-      nodePort: 31307
+#      nodePort: 31307

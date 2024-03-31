@@ -14,9 +14,9 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /home/ihudak/dev/dec.21/k8s/k8s-databases/mysql/mnt
+    path: {CURDIR}/mnt
 #    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/mnt
-#    type: Directory
+    type: Directory
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -24,6 +24,7 @@ metadata:
   name: mysql-persistent-claim
   namespace: databases
 spec:
+  volumeName: mysql-pv-volume
   storageClassName: manual
   accessModes:
     - ReadWriteOnce
@@ -54,6 +55,15 @@ spec:
       labels:
         app: mysql
     spec:
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-persistent-claim
+        - name: mysql-init-path
+          hostPath:
+            path: {CURDIR}/init
+      #            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/init
+      #            type: Directory
       containers:
         - name: mysql
           image: mysql:latest
@@ -94,15 +104,6 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
-      volumes:
-        - name: mysql-persistent-storage
-          persistentVolumeClaim:
-            claimName: mysql-persistent-claim
-        - name: mysql-init-path
-          hostPath:
-            path: /home/ihudak/dev/dec.21/k8s/k8s-databases/mysql/init
-#            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/mysql/init
-            type: Directory
 ---
 apiVersion: v1
 kind: Service
@@ -112,9 +113,9 @@ metadata:
 spec:
   selector:
     app: mysql
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 3306
       protocol: TCP
       targetPort: 3306
-      nodePort: 31306
+#      nodePort: 31306

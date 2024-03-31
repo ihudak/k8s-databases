@@ -7,3 +7,4 @@ data:
   mysql_server: 'mysql-service'
   pgdb_server: 'postgres-service'
   mongo_server: 'mongo-service'
+  root_path: '/home/ihudak/dev/dec.21/k8s/k8s-databases'

@@ -14,7 +14,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /home/ihudak/dev/dec.21/k8s/k8s-databases/postgres/mnt
+    path: {CURDIR}/mnt
 #    path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/mnt
 #    type: Directory
 ---
@@ -24,6 +24,7 @@ metadata:
   name: postgres-persistent-claim
   namespace: databases
 spec:
+  volumeName: postgres-pv-volume
   storageClassName: manual
   accessModes:
     - ReadWriteOnce
@@ -54,6 +55,15 @@ spec:
       labels:
         app: postgres
     spec:
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-persistent-claim
+        - name: pg-init-path
+          hostPath:
+            path: {CURDIR}/init
+      #            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
+      #            type: Directory
       containers:
         - name: postgres
           image: postgres:latest
@@ -84,15 +94,6 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
-      volumes:
-        - name: postgres-persistent-storage
-          persistentVolumeClaim:
-            claimName: postgres-persistent-claim
-        - name: pg-init-path
-          hostPath:
-            path: /home/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
-#            path: /Users/ihudak/dev/dec.21/k8s/k8s-databases/postgres/init
-            type: Directory
 ---
 apiVersion: v1
 kind: Service
@@ -102,9 +103,9 @@ metadata:
 spec:
   selector:
     app: postgres
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 5432
       protocol: TCP
       targetPort: 5432
-      nodePort: 31432
+#      nodePort: 31432
